@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='docs')
 
 # ── Constantes ────────────────────────────────────────────────────────────────
 STOP_WORDS_ES = [
