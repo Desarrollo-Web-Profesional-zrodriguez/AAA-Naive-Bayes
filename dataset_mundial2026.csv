@@ -1,0 +1,101 @@
+id,comentario,sentimiento
+1,Messi anotó hat-trick ante Argelia y ya igualó a Klose como máximo goleador mundialista histórico con 16 goles,Positivo
+2,Increíble que Messi a los 38 años siga siendo el mejor del planeta en el mundial,Positivo
+3,Argentina dominó completamente el partido ante Argelia sin darles ninguna oportunidad,Positivo
+4,El 3-0 de Argentina fue justo y merecido Argentina se ve como campeona nuevamente,Positivo
+5,Lionel Messi disputa su sexta Copa del Mundo y sigue rompiendo récords históricos,Positivo
+6,La actuación de Argentina frente a Argelia fue una clase magistral de fútbol total,Positivo
+7,Haaland anotó doblete y Noruega goleó a Irak en un partido completamente dominado,Positivo
+8,Erling Haaland llegó al mundial y demostró desde el primer partido que es una bestia goleadora,Positivo
+9,Noruega se impuso con autoridad a Irak gracias a la clase del delantero del Manchester City,Positivo
+10,Inglaterra goleó 4-2 a Croacia en Dallas en un partido lleno de goles y emociones,Positivo
+11,Qué golazo de Inglaterra ante Croacia fue un partido espectacular del principio al final,Positivo
+12,La selección inglesa mostró una versión muy sólida y contundente ante Croacia en Dallas,Positivo
+13,Colombia regresó a los mundiales después de ocho años y ganó 3-1 a Uzbekistán,Positivo
+14,El regreso de Colombia al mundial fue con victoria contundente tres a uno ante Uzbekistán,Positivo
+15,Colombia mostró que vuelve con hambre de gloria después de ocho años de ausencia mundialista,Positivo
+16,Senegal mereció más en el partido ante Francia tuvo ocasiones para haberse llevado los tres puntos,Positivo
+17,El empate de Senegal ante Francia es un resultado muy digno para una selección africana,Positivo
+18,República Democrática del Congo hizo un gran partido ante Portugal y mereció el empate,Positivo
+19,Qué sorpresa tan agradable el empate del Congo ante Portugal fue lo más impactante de la jornada,Positivo
+20,Ghana derrotó a Panamá 1-0 en un partido discreto pero con el resultado que necesitaban,Positivo
+21,Ghana aprovechó bien sus oportunidades y se llevó los tres puntos con una victoria valiosa,Positivo
+22,Suiza goleó 4-1 a Bosnia y Herzegovina y se perfila como líder cómodo del grupo,Positivo
+23,La goleada de Suiza ante Bosnia fue contundente y los pone en una posición privilegiada,Positivo
+24,México llega al partido ante Corea del Sur con tres puntos y con la afición alentando en Guadalajara,Positivo
+25,El ambiente en el Estadio Guadalajara para el México vs Corea del Sur es increíble totalmente lleno,Positivo
+26,El gol de penal de Sudáfrica al minuto 82 evitó la derrota ante Chequia en un emocionante empate,Positivo
+27,El empate de Sudáfrica ante Chequia es un punto valioso que los mantiene con muchas opciones,Positivo
+28,Canadá tiene una gran oportunidad de afianzarse como candidato a clasificar en su debut mundialista,Positivo
+29,Este Mundial 2026 con 48 selecciones es el más emocionante e impredecible de la historia,Positivo
+30,El formato de 48 equipos le da una oportunidad histórica a selecciones que nunca habían clasificado,Positivo
+31,Messi a los 38 años disputando su sexta Copa del Mundo es el mayor logro de la historia del fútbol,Positivo
+32,La Copa del Mundo 2026 en México Estados Unidos y Canadá tiene una organización impecable,Positivo
+33,Los estadios del Mundial 2026 están respondiendo con llenos totales en casi todas las sedes,Positivo
+34,La primera ronda del Mundial 2026 nos ha dado grandes sorpresas y resultados inesperados,Positivo
+35,El Grupo A del Mundial 2026 es emocionante con México y Corea del Sur peleando el liderato,Positivo
+36,Excelente partido de Argentina que mostró calidad táctica y mucha contundencia ofensiva,Positivo
+37,Qué actuación tan brillante de Haaland se nota que viene a romperla en este mundial,Positivo
+38,Fantástico nivel mostrado por Inglaterra una selección que luce como candidata firme al título,Positivo
+39,Colombia regresa pisando fuerte con una goleada que ilusiona mucho a su afición,Positivo
+40,Espectacular la entrega de la selección de Ghana para conseguir una victoria muy merecida,Positivo
+41,Argelia no pudo hacer nada ante la calidad de Argentina fue un resultado muy esperado,Negativo
+42,La defensa de Argelia fue un desastre total los centrales no pudieron frenar a Messi,Negativo
+43,Decepcionante actuación de Argelia parecía que ni siquiera querían estar en el mundial,Negativo
+44,Irak desperdició varias ocasiones claras cuando el marcador estaba 2-1 y eso costó caro,Negativo
+45,La selección de Irak fue muy imprecisa en el área rival y eso les impidió sacar algo positivo,Negativo
+46,Pésima actuación de Irak que no logró ni una sola vez inquietar la portería de Noruega,Negativo
+47,Croacia concedió demasiado espacio en el mediocampo y eso fue aprovechado por Inglaterra,Negativo
+48,La defensa croata estuvo muy mal parada y cometió errores que costaron tres goles en contra,Negativo
+49,Terrible nivel defensivo de Croacia que se vio totalmente superada durante todo el partido,Negativo
+50,Uzbekistán debutó en el mundial pero le costó muchísimo competir ante la calidad de Colombia,Negativo
+51,Uzbekistán no pudo hacer nada ante el juego combinativo de Colombia en Miami,Negativo
+52,Flojo desempeño de Uzbekistán que se vio superado en todas las líneas del campo,Negativo
+53,Francia decepcionó en su debut mundialista no esperábamos ese nivel tan pobre del campeón,Negativo
+54,Pésimo partido de Francia que dejó muchas dudas sobre su nivel como vigente campeona,Negativo
+55,Muy flojo el desempeño de Francia que no logró imponerse pese a tener mejor plantilla,Negativo
+56,Portugal fue muy decepcionante ante Congo no mostraron nada del fútbol que se les conoce,Negativo
+57,Pésima Portugal que dejó pasar la oportunidad de golear a un rival inferior en el papel,Negativo
+58,Terrible actuación de Portugal que generó muchas dudas sobre su funcionamiento colectivo,Negativo
+59,Panamá fue muy predecible en ataque no tuvo ideas y eso se reflejó en el marcador,Negativo
+60,Decepcionante Panamá que no generó ningún peligro real durante todo el encuentro,Negativo
+61,Bosnia y Herzegovina tuvo un debut para olvidar en el mundial siendo goleada 4-1,Negativo
+62,La defensa de Bosnia fue muy porosa y no pudo contener el ataque suizo en absoluto,Negativo
+63,Pésimo nivel defensivo de Bosnia que recibió una goleada vergonzosa en su debut mundialista,Negativo
+64,Chequia tuvo el partido controlado pero no supo cerrarlo y pagó el precio en el descuento,Negativo
+65,Terrible error de Chequia que dejó escapar la victoria en los últimos minutos del partido,Negativo
+66,Con 48 selecciones hay demasiados partidos aburridos entre equipos de nivel muy dispar,Negativo
+67,Hay partidos del grupo que están siendo muy tácticos y aburridos sin goles ni emociones,Negativo
+68,El nivel de algunas selecciones en este mundial deja mucho que desear honestamente,Negativo
+69,Partido muy aburrido sin ritmo ni emociones que dejó frustrada a toda la afición,Negativo
+70,Pésima organización de algunos horarios que dejó partidos muy flojos sin público,Negativo
+71,Decepcionante nivel mostrado por varias selecciones que generó un mundial flojo en su arranque,Negativo
+72,Terrible la falta de gol mostrada por equipos que se ven muy planos y predecibles,Negativo
+73,El partido entre Argentina y Argelia terminó 3-0 con goles de Messi en los tres tantos,Neutral
+74,Argentina y Argelia se enfrentaron en el Grupo J del Mundial 2026 el 16 de junio,Neutral
+75,Messi llegó a 16 goles en mundiales igualando el récord de Klose que duró más de una década,Neutral
+76,El partido entre Noruega e Irak se disputó en el Estadio Boston el 16 de junio de 2026,Neutral
+77,Irak mostró potencial en algunos momentos del partido pero no logró igualar el marcador,Neutral
+78,El partido entre Inglaterra y Croacia terminó 4-2 con un marcador parejo en el resultado,Neutral
+79,Croacia intentó remontar pero la ventaja de Inglaterra era demasiado grande para revertirla,Neutral
+80,Colombia vs Uzbekistán fue un partido en el que los cafeteros se impusieron con claridad,Neutral
+81,Francia y Senegal empataron en un partido muy disputado en Nueva York el 16 de junio,Neutral
+82,El empate entre Francia y Senegal fue un resultado parejo para lo que se vio en cancha,Neutral
+83,Francia y Senegal se vieron las caras en un partido equilibrado con pocas llegadas claras,Neutral
+84,Portugal empató 1-1 con República Democrática del Congo en un resultado del Grupo H,Neutral
+85,Portugal no pudo con República Democrática del Congo en un partido disputado en Houston,Neutral
+86,El único gol de Ghana fue suficiente para vencer a Panamá en un marcador de uno a cero,Neutral
+87,Suiza vs Bosnia terminó 4-1 en el partido disputado en Los Ángeles el 18 de junio,Neutral
+88,México y Corea del Sur llegan igualados con tres puntos al partido del Grupo A,Neutral
+89,El partido entre México y Corea del Sur define el liderato del Grupo A esta noche,Neutral
+90,México tiene la presión de jugar en casa ante su afición en un partido del mundial,Neutral
+91,Chequia y Sudáfrica empataron 1-1 en Atlanta con gol de penal de Mokoena al minuto 82,Neutral
+92,El partido de Canadá vs Qatar en Vancouver es el segundo partido de un equipo anfitrión,Neutral
+93,Corea del Sur llegó con tres puntos al partido ante México tras ganar en su debut también,Neutral
+94,La programación de los partidos del Grupo A se definió desde hace varios meses atrás,Neutral
+95,El Mundial 2026 se juega en sedes de México Estados Unidos y Canadá de manera conjunta,Neutral
+96,Cada partido del Mundial 2026 dura noventa minutos divididos en dos tiempos de cuarenta y cinco,Neutral
+97,Los dos primeros lugares de cada grupo clasifican directamente a la siguiente ronda del torneo,Neutral
+98,El árbitro del partido entre México y Corea del Sur fue designado por la FIFA con anticipación,Neutral
+99,La fase de grupos del Mundial 2026 contempla doce grupos de cuatro selecciones cada uno,Neutral
+100,El estadio Akron en Guadalajara tiene una capacidad de más de cuarenta mil espectadores,Neutral

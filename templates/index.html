@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clasificador de Sentimientos · Mundial 2026</title>
+  <meta name="description" content="Clasificador de sentimientos con Naive Bayes para comentarios del Mundial 2026" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & tokens ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b22;
+      --border:   #30363d;
+      --text:     #e6edf3;
+      --muted:    #8b949e;
+      --accent:   #58a6ff;
+
+      --neg:  #E74C3C;
+      --neu:  #95A5A6;
+      --pos:  #27AE60;
+
+      --neg-dim: rgba(231,76,60,.15);
+      --neu-dim: rgba(149,165,166,.15);
+      --pos-dim: rgba(39,174,96,.15);
+
+      --radius: 12px;
+      --shadow: 0 8px 32px rgba(0,0,0,.5);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background particles ────────────────────────────────────────── */
+    #canvas-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+
+    /* ── Layout ──────────────────────────────────────────────────────── */
+    .wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    /* ── Header ──────────────────────────────────────────────────────── */
+    header {
+      text-align: center;
+      padding: 3rem 0 2rem;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(88,166,255,.12); border: 1px solid rgba(88,166,255,.3);
+      color: var(--accent); border-radius: 999px; padding: .35rem 1rem;
+      font-size: .8rem; font-weight: 600; letter-spacing: .05em;
+      text-transform: uppercase; margin-bottom: 1.2rem;
+    }
+    .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 1.8s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem); font-weight: 800;
+      background: linear-gradient(135deg, #fff 30%, var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      line-height: 1.15; margin-bottom: .8rem;
+    }
+    .subtitle { color: var(--muted); font-size: 1.05rem; max-width: 540px; margin: 0 auto; }
+
+    /* ── Stats strip ─────────────────────────────────────────────────── */
+    .stats-strip {
+      display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;
+      margin: 2rem 0;
+    }
+    .stat {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: .8rem 1.6rem; text-align: center;
+      transition: transform .2s;
+    }
+    .stat:hover { transform: translateY(-3px); }
+    .stat-val { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+    .stat-lbl { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: .2rem; }
+
+    /* ── Input card ──────────────────────────────────────────────────── */
+    .input-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+    .input-card label { font-weight: 600; font-size: .95rem; display: block; margin-bottom: .8rem; }
+    textarea {
+      width: 100%; min-height: 100px; resize: vertical;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 1rem; color: var(--text);
+      font-family: 'Inter', sans-serif; font-size: 1rem; line-height: 1.6;
+      transition: border-color .25s, box-shadow .25s;
+      outline: none;
+    }
+    textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(88,166,255,.18); }
+
+    .input-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; flex-wrap: wrap; gap: 1rem; }
+    .char-count { color: var(--muted); font-size: .85rem; }
+
+    .examples { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .example-btn {
+      background: rgba(255,255,255,.05); border: 1px solid var(--border);
+      border-radius: 999px; padding: .3rem .9rem; font-size: .78rem;
+      color: var(--muted); cursor: pointer; transition: all .2s;
+    }
+    .example-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(88,166,255,.08); }
+
+    .btn-analizar {
+      background: linear-gradient(135deg, #1f6feb, var(--accent));
+      border: none; border-radius: 8px; padding: .85rem 2.2rem;
+      color: #fff; font-size: 1rem; font-weight: 700;
+      cursor: pointer; letter-spacing: .04em;
+      transition: transform .2s, box-shadow .2s, opacity .2s;
+      box-shadow: 0 4px 20px rgba(88,166,255,.4);
+    }
+    .btn-analizar:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(88,166,255,.55); }
+    .btn-analizar:active { transform: translateY(0); }
+    .btn-analizar:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    /* ── Spinner ─────────────────────────────────────────────────────── */
+    .spinner {
+      display: none; width: 20px; height: 20px;
+      border: 3px solid rgba(255,255,255,.2); border-top-color: #fff;
+      border-radius: 50%; animation: spin .7s linear infinite; margin-right: .5rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Result panel ────────────────────────────────────────────────── */
+    #resultado { display: none; animation: fadeUp .5s ease both; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none} }
+
+    /* Veredicto */
+    .veredicto-card {
+      border-radius: var(--radius); padding: 2rem;
+      margin-bottom: 1.5rem; border: 2px solid; position: relative; overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .veredicto-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top left, var(--glow-color) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .veredicto-header { display: flex; align-items: center; gap: 1.2rem; }
+    .veredicto-icon { font-size: 3.5rem; line-height: 1; }
+    .veredicto-label { font-size: .8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; opacity: .7; }
+    .veredicto-clase { font-size: 2.4rem; font-weight: 800; line-height: 1.1; }
+    .veredicto-conf { font-size: .95rem; opacity: .75; margin-top: .3rem; }
+
+    /* Barras de probabilidad */
+    .prob-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; }
+    .section-title { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 1.2rem; }
+    .prob-row { display: flex; align-items: center; gap .8rem; margin-bottom: 1rem; }
+    .prob-label { width: 90px; font-weight: 600; font-size: .95rem; flex-shrink: 0; }
+    .prob-bar-track { flex: 1; background: rgba(255,255,255,.07); border-radius: 999px; height: 10px; overflow: hidden; }
+    .prob-bar-fill { height: 100%; border-radius: 999px; transition: width 1s cubic-bezier(.4,0,.2,1); width: 0; }
+    .prob-pct { width: 52px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: .88rem; color: var(--muted); flex-shrink: 0; }
+
+    /* ── How it works panel ──────────────────────────────────────────── */
+    .how-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin-bottom: 1.5rem;
+    }
+    .how-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 1.5rem; cursor: pointer; user-select: none;
+      border-bottom: 1px solid transparent; transition: background .2s;
+    }
+    .how-header:hover { background: rgba(255,255,255,.03); }
+    .how-header.open { border-bottom-color: var(--border); }
+    .how-header-left { display: flex; align-items: center; gap: .8rem; }
+    .how-icon { font-size: 1.3rem; }
+    .how-title { font-weight: 700; font-size: 1rem; }
+    .how-subtitle { font-size: .8rem; color: var(--muted); margin-top: .1rem; }
+    .chevron { transition: transform .3s; font-size: 1rem; color: var(--muted); }
+    .chevron.open { transform: rotate(180deg); }
+    .how-body { display: none; padding: 1.5rem; }
+    .how-body.open { display: block; animation: fadeUp .3s ease; }
+
+    /* Paso 1: palabras */
+    .words-section { margin-bottom: 1.8rem; }
+    .words-title { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: .7rem; }
+    .word-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .chip {
+      display: inline-flex; align-items: center; gap: .35rem;
+      border-radius: 999px; padding: .3rem .9rem; font-size: .82rem; font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .chip.found { background: rgba(88,166,255,.15); border: 1px solid rgba(88,166,255,.35); color: var(--accent); }
+    .chip.ignored { background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--muted); text-decoration: line-through; }
+
+    /* Paso 2: votos por palabra */
+    .votes-grid { display: grid; gap: .8rem; margin-bottom: 1.8rem; }
+    .vote-row {
+      background: rgba(255,255,255,.03); border: 1px solid var(--border);
+      border-radius: 8px; padding: .9rem 1.1rem;
+    }
+    .vote-word { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: .95rem; margin-bottom: .7rem; }
+    .vote-bars { display: flex; flex-direction: column; gap: .4rem; }
+    .vote-bar-row { display: flex; align-items: center; gap .6rem; }
+    .vote-cls { width: 75px; font-size: .78rem; font-weight: 600; flex-shrink: 0; }
+    .vote-track { flex: 1; background: rgba(255,255,255,.06); border-radius: 999px; height: 7px; overflow: hidden; }
+    .vote-fill { height: 100%; border-radius: 999px; transition: width 1.2s cubic-bezier(.4,0,.2,1); width: 0; }
+    .vote-val { width: 72px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--muted); flex-shrink: 0; }
+
+    /* Paso 3: cálculo final */
+    .calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .calc-card {
+      border-radius: 10px; padding: 1.1rem 1.3rem; border: 1.5px solid;
+      position: relative; overflow: hidden;
+    }
+    .calc-card.winner { box-shadow: 0 0 20px var(--card-glow); }
+    .calc-cls { font-weight: 700; font-size: 1rem; margin-bottom: .5rem; }
+    .calc-line { font-size: .78rem; color: var(--muted); margin-bottom: .2rem; font-family: 'JetBrains Mono', monospace; }
+    .calc-result { font-size: 1.4rem; font-weight: 800; margin-top: .6rem; }
+    .winner-badge {
+      position: absolute; top: .6rem; right: .7rem;
+      background: var(--accent); color: #000; font-size: .65rem; font-weight: 800;
+      padding: .15rem .6rem; border-radius: 999px; letter-spacing: .06em;
+    }
+
+    /* ── Explicación simple ───────────────────────────────────────────── */
+    .explain-box {
+      background: rgba(88,166,255,.07); border: 1px solid rgba(88,166,255,.2);
+      border-radius: 10px; padding: 1.1rem 1.4rem; margin-top: 1.5rem;
+      font-size: .9rem; line-height: 1.7; color: var(--text);
+    }
+    .explain-box strong { color: var(--accent); }
+
+    /* ── Responsive ───────────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .stats-strip { gap: 1rem; }
+      .input-footer { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ── Scrollbar ────────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+  </style>
+</head>
+<body>
+
+<canvas id="canvas-bg"></canvas>
+
+<div class="wrapper">
+
+  <!-- ── Header ──────────────────────────────────────────────────────── -->
+  <header>
+    <div class="badge"><span class="dot"></span>Demo en vivo · Actividad 2</div>
+    <h1>Clasificador de<br>Sentimientos ⚽</h1>
+    <p class="subtitle">Algoritmo Naive Bayes entrenado con comentarios del Mundial 2026. Escribe lo que quieras y el modelo decide.</p>
+  </header>
+
+  <!-- ── Stats ───────────────────────────────────────────────────────── -->
+  <div class="stats-strip">
+    <div class="stat">
+      <div class="stat-val">{{ stats.total }}</div>
+      <div class="stat-lbl">Comentarios entrenados</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">{{ stats.accuracy }}</div>
+      <div class="stat-lbl">Exactitud del modelo</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">{{ stats.vocabulario }}</div>
+      <div class="stat-lbl">Palabras en vocabulario</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">3</div>
+      <div class="stat-lbl">Clases de sentimiento</div>
+    </div>
+  </div>
+
+  <!-- ── Input ───────────────────────────────────────────────────────── -->
+  <div class="input-card">
+    <label for="comentario-input">✍️ Escribe tu comentario sobre el partido</label>
+    <textarea id="comentario-input" placeholder="Ej: México jugó increíble y mereció ganar el partido..." maxlength="300"></textarea>
+
+    <div class="input-footer">
+      <div>
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem;">Ejemplos rápidos:</div>
+        <div class="examples">
+          <button class="example-btn" onclick="setExample('Messi hizo un golazo espectacular increíble')">⚡ Positivo fuerte</button>
+          <button class="example-btn" onclick="setExample('Terrible actuación, el equipo fue una decepción total')">😠 Negativo fuerte</button>
+          <button class="example-btn" onclick="setExample('México y Argentina se enfrentan mañana en el estadio')">📋 Neutral</button>
+          <button class="example-btn" onclick="setExample('Qué partido tan flojo y aburrido, no me gustó nada')">😞 Negativo suave</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.8rem;">
+        <span class="char-count" id="char-count">0 / 300</span>
+        <button class="btn-analizar" id="btn-analizar" onclick="analizar()">
+          <span class="spinner" id="spinner"></span>
+          <span id="btn-text">Analizar sentimiento</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Resultado ────────────────────────────────────────────────────── -->
+  <div id="resultado">
+
+    <!-- Veredicto principal -->
+    <div class="veredicto-card" id="veredicto-card">
+      <div class="veredicto-header">
+        <div class="veredicto-icon" id="veredicto-icon">🤔</div>
+        <div>
+          <div class="veredicto-label">El modelo clasifica este comentario como</div>
+          <div class="veredicto-clase" id="veredicto-clase">—</div>
+          <div class="veredicto-conf" id="veredicto-conf"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Probabilidades -->
+    <div class="prob-section">
+      <div class="section-title">📊 Probabilidad por clase</div>
+      <div id="prob-bars"></div>
+    </div>
+
+    <!-- Cómo funciona — acordeón -->
+    <div class="how-panel">
+      <div class="how-header" id="how-header" onclick="toggleHow()">
+        <div class="how-header-left">
+          <span class="how-icon">🧠</span>
+          <div>
+            <div class="how-title">¿Cómo llegó el algoritmo a esa decisión?</div>
+            <div class="how-subtitle">Paso a paso · Matemática visible</div>
+          </div>
+        </div>
+        <span class="chevron" id="chevron">▼</span>
+      </div>
+
+      <div class="how-body" id="how-body">
+
+        <!-- Paso 1 -->
+        <div style="margin-bottom:1.6rem;">
+          <div class="section-title">🔍 Paso 1 — Tokenización: ¿qué palabras reconoce el modelo?</div>
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:.9rem;">
+            El modelo solo analiza palabras que conoce de su entrenamiento.
+            Las palabras de relleno (el, la, de, y…) se ignoran automáticamente.
+          </p>
+          <div style="margin-bottom:.5rem;">
+            <div class="words-title">✅ Palabras reconocidas y analizadas</div>
+            <div class="word-chips" id="words-found"></div>
+          </div>
+          <div style="margin-top:.8rem;">
+            <div class="words-title">⛔ Palabras ignoradas (stop words o fuera del vocabulario)</div>
+            <div class="word-chips" id="words-ignored"></div>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div style="margin-bottom:1.6rem;">
+          <div class="section-title">🗳️ Paso 2 — Votos: cada palabra "vota" por una clase</div>
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:.9rem;">
+            Para cada palabra reconocida, el modelo consulta la probabilidad aprendida
+            P(palabra | clase). Cuanto mayor el valor, más "pesa" esa palabra para esa clase.
+          </p>
+          <div class="votes-grid" id="votes-grid"></div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div>
+          <div class="section-title">⚖️ Paso 3 — Cálculo final: Prior × Producto de pesos</div>
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:.9rem;">
+            Naive Bayes multiplica la frecuencia a priori de cada clase
+            por todos los pesos de las palabras. La clase con el producto mayor gana.
+          </p>
+          <div class="calc-grid" id="calc-grid"></div>
+        </div>
+
+        <!-- Explicación en lenguaje simple -->
+        <div class="explain-box" id="explain-box"></div>
+
+      </div><!-- /how-body -->
+    </div><!-- /how-panel -->
+
+  </div><!-- /resultado -->
+
+</div><!-- /wrapper -->
+
+<script>
+/* ── Canvas partículas ────────────────────────────────────────────────────── */
+(function() {
+  const c = document.getElementById('canvas-bg');
+  const ctx = c.getContext('2d');
+  let W, H, parts = [];
+  const N = 55;
+
+  function resize() {
+    W = c.width  = window.innerWidth;
+    H = c.height = window.innerHeight;
+  }
+  function mkPart() {
+    return {
+      x: Math.random() * W, y: Math.random() * H,
+      r: Math.random() * 1.5 + .4,
+      vx: (Math.random() - .5) * .3,
+      vy: (Math.random() - .5) * .3,
+      a: Math.random() * .35 + .05
+    };
+  }
+  resize();
+  for (let i = 0; i < N; i++) parts.push(mkPart());
+
+  (function frame() {
+    ctx.clearRect(0, 0, W, H);
+    parts.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(88,166,255,${p.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(frame);
+  })();
+  window.addEventListener('resize', resize);
+})();
+
+/* ── Utilidades ───────────────────────────────────────────────────────────── */
+const ICONOS  = { Negativo: '😠', Neutral: '😐', Positivo: '😄' };
+const COLORES = { Negativo: '#E74C3C', Neutral: '#95A5A6', Positivo: '#27AE60' };
+const GLOWS   = { Negativo: 'rgba(231,76,60,.25)', Neutral: 'rgba(149,165,166,.2)', Positivo: 'rgba(39,174,96,.25)' };
+const DIMS    = { Negativo: 'rgba(231,76,60,.12)', Neutral: 'rgba(149,165,166,.1)', Positivo: 'rgba(39,174,96,.12)' };
+
+const textarea = document.getElementById('comentario-input');
+const charCount = document.getElementById('char-count');
+
+textarea.addEventListener('input', () => {
+  charCount.textContent = `${textarea.value.length} / 300`;
+});
+textarea.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.ctrlKey) analizar();
+});
+
+function setExample(txt) {
+  textarea.value = txt;
+  charCount.textContent = `${txt.length} / 300`;
+  textarea.focus();
+}
+
+/* ── Analizar ─────────────────────────────────────────────────────────────── */
+async function analizar() {
+  const comentario = textarea.value.trim();
+  if (!comentario) { textarea.focus(); return; }
+
+  const btn = document.getElementById('btn-analizar');
+  const spinner = document.getElementById('spinner');
+  const btnText = document.getElementById('btn-text');
+  btn.disabled = true;
+  spinner.style.display = 'inline-block';
+  btnText.textContent = 'Analizando...';
+
+  try {
+    const res = await fetch('/predecir', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ comentario })
+    });
+    const data = await res.json();
+    if (data.error) { alert(data.error); return; }
+    renderResultado(data);
+  } catch (e) {
+    alert('Error de conexión con el servidor.');
+  } finally {
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    btnText.textContent = 'Analizar sentimiento';
+  }
+}
+
+/* ── Render resultado ─────────────────────────────────────────────────────── */
+function renderResultado(d) {
+  const pred  = d.prediccion;
+  const color = COLORES[pred];
+  const conf  = d.probabilidades[pred];
+
+  /* Veredicto */
+  const card = document.getElementById('veredicto-card');
+  card.style.borderColor = color;
+  card.style.setProperty('--glow-color', GLOWS[pred]);
+  card.style.background = DIMS[pred];
+  document.getElementById('veredicto-icon').textContent = ICONOS[pred];
+  const claseEl = document.getElementById('veredicto-clase');
+  claseEl.textContent = pred.toUpperCase();
+  claseEl.style.color = color;
+  document.getElementById('veredicto-conf').textContent =
+    `Confianza del modelo: ${(conf * 100).toFixed(1)}%`;
+
+  /* Barras de probabilidad */
+  const probContainer = document.getElementById('prob-bars');
+  probContainer.innerHTML = '';
+  d.clases.forEach(cls => {
+    const pct = (d.probabilidades[cls] * 100).toFixed(1);
+    probContainer.innerHTML += `
+      <div class="prob-row" style="display:flex;align-items:center;gap:.8rem;margin-bottom:.9rem;">
+        <div class="prob-label" style="color:${COLORES[cls]};width:90px;font-weight:600;">${cls}</div>
+        <div class="prob-bar-track" style="flex:1;background:rgba(255,255,255,.07);border-radius:999px;height:10px;overflow:hidden;">
+          <div class="prob-bar-fill" data-w="${pct}" style="height:100%;border-radius:999px;background:${COLORES[cls]};width:0;transition:width 1s cubic-bezier(.4,0,.2,1);"></div>
+        </div>
+        <div class="prob-pct" style="width:52px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--muted);">${pct}%</div>
+      </div>`;
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.prob-bar-fill').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+  }, 50);
+
+  /* Palabras reconocidas */
+  const wf = document.getElementById('words-found');
+  wf.innerHTML = d.palabras_reconocidas.length
+    ? d.palabras_reconocidas.map(w => `<span class="chip found">✓ ${w}</span>`).join('')
+    : '<span style="color:var(--muted);font-size:.85rem;">Ninguna palabra reconocida</span>';
+
+  const wi = document.getElementById('words-ignored');
+  wi.innerHTML = d.palabras_ignoradas.length
+    ? d.palabras_ignoradas.map(w => `<span class="chip ignored">${w}</span>`).join('')
+    : '<span style="color:var(--muted);font-size:.85rem;">—</span>';
+
+  /* Votos por palabra */
+  const vg = document.getElementById('votes-grid');
+  vg.innerHTML = '';
+  if (d.palabras_reconocidas.length === 0) {
+    vg.innerHTML = '<p style="color:var(--muted);font-size:.85rem;">No hay palabras para mostrar votos.</p>';
+  } else {
+    // Máximo para escalar barras
+    const allVals = d.palabras_reconocidas.flatMap(p => d.clases.map(c => d.votos[p][c]));
+    const maxVal  = Math.max(...allVals);
+
+    d.palabras_reconocidas.forEach(palabra => {
+      const bars = d.clases.map(cls => {
+        const val = d.votos[palabra][cls];
+        const pct = maxVal > 0 ? (val / maxVal * 100) : 0;
+        return `
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem;">
+            <div style="width:75px;font-size:.78rem;font-weight:600;color:${COLORES[cls]};">${cls}</div>
+            <div style="flex:1;background:rgba(255,255,255,.06);border-radius:999px;height:7px;overflow:hidden;">
+              <div data-w="${pct}" style="height:100%;border-radius:999px;background:${COLORES[cls]};width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1);"></div>
+            </div>
+            <div style="width:72px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted);">${val.toFixed(5)}</div>
+          </div>`;
+      }).join('');
+
+      vg.innerHTML += `
+        <div class="vote-row">
+          <div class="vote-word">"${palabra}"</div>
+          ${bars}
+        </div>`;
+    });
+    setTimeout(() => {
+      vg.querySelectorAll('[data-w]').forEach(el => el.style.width = el.dataset.w + '%');
+    }, 80);
+  }
+
+  /* Cálculo bayesiano */
+  const cg = document.getElementById('calc-grid');
+  cg.innerHTML = '';
+  d.pasos.forEach(paso => {
+    const isWinner = paso.clase === pred;
+    cg.innerHTML += `
+      <div class="calc-card${isWinner ? ' winner' : ''}"
+        style="border-color:${paso.color};background:${DIMS[paso.clase]};--card-glow:${GLOWS[paso.clase]}">
+        ${isWinner ? '<div class="winner-badge">GANA ★</div>' : ''}
+        <div class="calc-cls" style="color:${paso.color}">${paso.clase}</div>
+        <div class="calc-line">Prior: ${paso.prior_fmt}</div>
+        <div class="calc-line">Score bruto: ${paso.score_fmt}</div>
+        <div class="calc-result" style="color:${paso.color}">${paso.porcentaje}</div>
+      </div>`;
+  });
+
+  /* Explicación en lenguaje simple */
+  const topWord = d.palabras_reconocidas.length > 0
+    ? d.palabras_reconocidas[0]
+    : 'ninguna';
+  const explain = document.getElementById('explain-box');
+  explain.innerHTML = `
+    <strong>💡 En palabras simples:</strong> El modelo leyó tu comentario y encontró
+    <strong>${d.palabras_reconocidas.length}</strong> palabra(s) útil(es)
+    (${d.palabras_reconocidas.map(w=>`"${w}"`).join(', ') || '—'}).
+    Para cada palabra, consultó en su "memoria" qué tan probable es que aparezca en
+    comentarios Negativos, Neutrales o Positivos.
+    Multiplicó todos esos pesos junto con la frecuencia histórica de cada clase, y
+    la clase <strong style="color:${color}">${pred}</strong> acumuló el mayor puntaje
+    (<strong>${(conf*100).toFixed(1)}%</strong>), así que esa es la predicción final.`;
+
+  /* Mostrar y auto-abrir el acordeón */
+  const resultDiv = document.getElementById('resultado');
+  resultDiv.style.display = 'block';
+  resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Auto-expandir cómo funciona
+  openHow();
+}
+
+/* ── Acordeón ─────────────────────────────────────────────────────────────── */
+function toggleHow() {
+  const body    = document.getElementById('how-body');
+  const chevron = document.getElementById('chevron');
+  const header  = document.getElementById('how-header');
+  const isOpen  = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chevron.classList.toggle('open', !isOpen);
+  header.classList.toggle('open', !isOpen);
+}
+function openHow() {
+  const body    = document.getElementById('how-body');
+  const chevron = document.getElementById('chevron');
+  const header  = document.getElementById('how-header');
+  body.classList.add('open');
+  chevron.classList.add('open');
+  header.classList.add('open');
+}
+</script>
+</body>
+</html>
